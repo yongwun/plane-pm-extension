@@ -1,0 +1,76 @@
+# Plane PM Extension - Production Docker Compose
+# Deploy alongside Plane Self-Hosted
+#
+# Usage:
+#   1. Copy this file to your Plane docker directory, OR
+#   2. Set the Docker network name to match Plane's network
+#
+# Prerequisites:
+#   - Plane Self-Hosted running (docker compose up -d)
+#   - API token from Plane Settings → API Tokens
+
+name: plane-pm-extension
+
+services:
+  pm-backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: plane-pm-extension-backend:latest
+    container_name: pm-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PM_DATABASE_URL: ${PM_DATABASE_URL:-postgresql+asyncpg://plane:plane@plane-db:5432/plane}
+      PM_PLANE_BASE_URL: ${PM_PLANE_BASE_URL:-http://api:8000}
+      PM_PLANE_API_TOKEN: ${PM_PLANE_API_TOKEN}
+      PM_PLANE_WEB_URL: ${PM_PLANE_WEB_URL:-http://localhost:9394}
+      PM_PLANE_WORKSPACE_SLUG: ${PM_PLANE_WORKSPACE_SLUG}
+      PM_CORS_ORIGINS: '["http://localhost:3000","http://localhost:9394"]'
+      PM_DEBUG: "false"
+    # Override CMD for production (no --reload)
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "2"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - pm-network
+      - plane-network
+    depends_on:
+      plane-db:
+        condition: service_healthy
+
+  pm-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${PM_API_BASE_URL:-http://localhost:8080}
+    image: plane-pm-extension-frontend:latest
+    container_name: pm-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${PM_API_BASE_URL:-http://localhost:8080}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - pm-network
+    depends_on:
+      - pm-backend
+
+networks:
+  pm-network:
+    driver: bridge
+  plane-network:
+    external: true
+    name: ${PLANE_NETWORK:-plane-app_default}

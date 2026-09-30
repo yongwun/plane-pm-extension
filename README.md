@@ -6,6 +6,8 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](#)
 [![Plane](https://img.shields.io/badge/Plane-Self--Hosted-purple)](https://plane.so)
 
+📖 [中文说明](README_CN.md)
+
 ---
 
 ## Overview

@@ -7,8 +7,11 @@ import {
 } from "@/lib/api";
 import WBSTree from "@/components/WBSTree";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageToggle from "@/components/LanguageToggle";
+import { useLang } from "@/lib/i18n";
 
 export default function WBSPage() {
+  const { t } = useLang();
   const [projectList, setProjectList] = useState<ProjectExt[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [wbsData, setWbsData] = useState<WBSResponse | null>(null);
@@ -62,9 +65,9 @@ export default function WBSPage() {
       <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">
-            ← 首页
+            ← {t("common.home")}
           </Link>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">WBS 工作分解结构</h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t("wbs.title")}</h1>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -72,7 +75,7 @@ export default function WBSPage() {
             value={selectedProject}
             onChange={(e) => setSelectedProject(e.target.value)}
           >
-            <option value="">选择项目...</option>
+            <option value="">{t("common.selectProject")}</option>
             {projectList.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.plane_project_name || p.plane_project_id}
@@ -87,15 +90,16 @@ export default function WBSPage() {
             }`}
             onClick={() => setEditable(!editable)}
           >
-            {editable ? "🔒 锁定编辑" : "✏️ 开启编辑"}
+            {editable ? t("wbs.lockEdit") : t("wbs.unlockEdit")}
           </button>
           <button
             className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
             onClick={handleSync}
             disabled={loading}
           >
-            {loading ? "同步中..." : "从 Plane 同步"}
+            {loading ? t("common.syncing") : t("common.syncFromPlane")}
           </button>
+          <LanguageToggle />
           <ThemeToggle />
         </div>
       </header>
@@ -110,12 +114,12 @@ export default function WBSPage() {
         {!selectedProject ? (
           <div className="text-center py-20 text-slate-400 dark:text-slate-500">
             <p className="text-4xl mb-4">🌳</p>
-            <p className="text-base">请先选择一个项目，然后查看 WBS</p>
+            <p className="text-base">{t("wbs.selectProjectHint")}</p>
           </div>
         ) : loading ? (
           <div className="text-center py-20 text-slate-400 dark:text-slate-500">
             <div className="inline-block w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-4" />
-            <p>加载中...</p>
+            <p>{t("common.loading")}</p>
           </div>
         ) : wbsData && wbsData.tree.length > 0 ? (
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
@@ -124,8 +128,8 @@ export default function WBSPage() {
         ) : wbsData ? (
           <div className="text-center py-20 text-slate-400 dark:text-slate-500">
             <p className="text-4xl mb-4">📋</p>
-            <p className="text-base font-medium">暂无工作项数据</p>
-            <p className="text-sm mt-2">请先从 Plane 同步工作项</p>
+            <p className="text-base font-medium">{t("wbs.noWorkitems")}</p>
+            <p className="text-sm mt-2">{t("wbs.syncFirst")}</p>
           </div>
         ) : null}
       </div>

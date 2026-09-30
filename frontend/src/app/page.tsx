@@ -2,15 +2,19 @@
 
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
-
-const navItems = [
-  { href: "/gantt", label: "甘特图 & 关键路径", icon: "📊", desc: "CPM 关键路径、依赖关系、里程碑" },
-  { href: "/wbs", label: "WBS 工作分解", icon: "🌳", desc: "树形结构、自动编号、层级管理" },
-  { href: "/resources", label: "资源管理", icon: "👥", desc: "资源池、分配、费率、负荷分析" },
-  { href: "/evm", label: "挣值分析 EVM", icon: "📈", desc: "SPI/CPI/EAC、S曲线、趋势预测" },
-];
+import LanguageToggle from "@/components/LanguageToggle";
+import { useLang } from "@/lib/i18n";
 
 export default function Home() {
+  const { t } = useLang();
+
+  const navItems = [
+    { href: "/gantt", label: t("nav.gantt"), icon: "📊", desc: t("nav.ganttDesc") },
+    { href: "/wbs", label: t("nav.wbs"), icon: "🌳", desc: t("nav.wbsDesc") },
+    { href: "/resources", label: t("nav.resources"), icon: "👥", desc: t("nav.resourcesDesc") },
+    { href: "/evm", label: t("nav.evm"), icon: "📈", desc: t("nav.evmDesc") },
+  ];
+
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
       <div className="max-w-5xl mx-auto px-8 py-10">
@@ -21,10 +25,13 @@ export default function Home() {
               PM Extension Service
             </h1>
             <p className="text-base text-slate-600 dark:text-slate-400 mt-2">
-              ProjectLibre 级别专业项目管理功能 — 运行于 Plane 之上
+              {t("nav.subtitle")}
             </p>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
 
         {/* Navigation Grid */}
@@ -49,7 +56,7 @@ export default function Home() {
         {/* API Info */}
         <div className="mt-10 p-5 bg-sky-50 dark:bg-sky-900/30 rounded-xl border border-sky-200 dark:border-sky-800">
           <p className="text-sm text-sky-800 dark:text-sky-300">
-            <strong className="font-bold">API 文档</strong>{" "}
+            <strong className="font-bold">{t("nav.apiDocs")}</strong>{" "}
             <a
               href="http://localhost:8080/docs"
               className="underline underline-offset-2 hover:text-sky-600 dark:hover:text-sky-200"

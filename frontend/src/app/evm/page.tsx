@@ -7,6 +7,8 @@ import {
   type ProjectExt, type Baseline, type EVMResult,
 } from "@/lib/api";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageToggle from "@/components/LanguageToggle";
+import { useLang } from "@/lib/i18n";
 import { useTheme } from "@/components/ThemeProvider";
 import * as echarts from "echarts";
 
@@ -34,6 +36,7 @@ function kpiColor(v: number, invert = false) {
 /* ---------- Main Component ---------- */
 
 export default function EVMPage() {
+  const { t } = useLang();
   const { theme } = useTheme();
   const [projectList, setProjectList] = useState<ProjectExt[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
@@ -86,7 +89,7 @@ export default function EVMPage() {
       chart.clear();
       chart.setOption({
         title: {
-          text: "暂无 EVM 数据",
+          text: t("evm.noEvmData"),
           left: "center",
           top: "center",
           textStyle: { color: textColor, fontSize: 14, fontWeight: "normal" },
@@ -110,7 +113,7 @@ export default function EVMPage() {
         textStyle: { color: isDark ? "#e2e8f0" : "#0f172a", fontSize: 13 },
       },
       legend: {
-        data: ["PV 计划值", "EV 挣值", "AC 实际成本", "BAC 预算"],
+        data: [t("evm.pvLabel"), t("evm.evLabel"), t("evm.acLabel"), t("evm.bacLabel")],
         textStyle: { color: textColor, fontSize: 12 },
         top: 0,
       },
@@ -133,7 +136,7 @@ export default function EVMPage() {
       },
       series: [
         {
-          name: "PV 计划值",
+          name: t("evm.pvLabel"),
           type: "line",
           data: pvData,
           smooth: true,
@@ -142,7 +145,7 @@ export default function EVMPage() {
           areaStyle: { color: "rgba(59,130,246,0.08)" },
         },
         {
-          name: "EV 挣值",
+          name: t("evm.evLabel"),
           type: "line",
           data: evData,
           smooth: true,
@@ -151,7 +154,7 @@ export default function EVMPage() {
           areaStyle: { color: "rgba(16,185,129,0.08)" },
         },
         {
-          name: "AC 实际成本",
+          name: t("evm.acLabel"),
           type: "line",
           data: acData,
           smooth: true,
@@ -159,7 +162,7 @@ export default function EVMPage() {
           itemStyle: { color: "#f59e0b" },
         },
         {
-          name: "BAC 预算",
+          name: t("evm.bacLabel"),
           type: "line",
           data: bacLine,
           lineStyle: { width: 1.5, type: "dashed", color: "#94a3b8" },
@@ -221,9 +224,9 @@ export default function EVMPage() {
       <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">
-            ← 首页
+            ← {t("common.home")}
           </Link>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">挣值分析 (EVM)</h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t("evm.title")}</h1>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -231,13 +234,14 @@ export default function EVMPage() {
             value={selectedProject}
             onChange={(e) => setSelectedProject(e.target.value)}
           >
-            <option value="">选择项目...</option>
+            <option value="">{t("common.selectProject")}</option>
             {projectList.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.plane_project_name || p.plane_project_id}
               </option>
             ))}
           </select>
+          <LanguageToggle />
           <ThemeToggle />
         </div>
       </header>
@@ -252,20 +256,20 @@ export default function EVMPage() {
         {!selectedProject ? (
           <div className="text-center py-20 text-slate-400 dark:text-slate-500">
             <p className="text-4xl mb-4">📈</p>
-            <p className="text-base">请先选择一个项目</p>
+            <p className="text-base">{t("evm.selectProjectHint")}</p>
           </div>
         ) : (
           <>
             {/* ---- Controls ---- */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm px-6 py-4">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">基线：</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("evm.baseline")}</span>
                 <select
                   className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                   value={selectedBaseline}
                   onChange={(e) => setSelectedBaseline(e.target.value)}
                 >
-                  <option value="">使用活跃基线</option>
+                  <option value="">{t("evm.useActiveBaseline")}</option>
                   {baselines.map((b) => (
                     <option key={b.id} value={b.id}>
                       {b.name} ({b.items_count}项, {b.baseline_date.slice(0, 10)})
@@ -276,16 +280,16 @@ export default function EVMPage() {
                   onClick={() => setShowBlForm(!showBlForm)}
                   className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                 >
-                  {showBlForm ? "取消" : "+ 新建基线"}
+                  {showBlForm ? t("common.cancel") : t("evm.newBaseline")}
                 </button>
                 <button
                   onClick={handleCalculateEVM}
                   disabled={loading}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-1.5 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
                 >
-                  {loading ? "计算中..." : "计算 EVM"}
+                  {loading ? t("evm.calculating") : t("evm.calculateEVM")}
                 </button>
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">状态日期：</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("evm.statusDate")}</span>
                 <input
                   type="date"
                   value={statusDate}
@@ -294,14 +298,14 @@ export default function EVMPage() {
                 />
                 {r && (
                   <span className="ml-auto text-xs text-slate-500 dark:text-slate-400">
-                    状态日期: {r.status_date} · BAC: {fmtMoney(r.bac)}
+                    {t("evm.statusDateInfo")}: {r.status_date} · BAC: {fmtMoney(r.bac)}
                   </span>
                 )}
               </div>
               {showBlForm && (
                 <div className="mt-3 flex gap-3">
                   <input
-                    placeholder="基线名称 (如: 初始基线 v1)"
+                    placeholder={t("evm.baselineNamePh")}
                     value={newBlName}
                     onChange={(e) => setNewBlName(e.target.value)}
                     className="flex-1 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
@@ -310,7 +314,7 @@ export default function EVMPage() {
                     onClick={handleCreateBaseline}
                     className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
-                    创建
+                    {t("common.create")}
                   </button>
                 </div>
               )}
@@ -319,10 +323,10 @@ export default function EVMPage() {
             {/* ---- KPI Cards ---- */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "SPI 进度绩效", value: r ? fmtPct(r.spi) : "—", color: kpiColor(r?.spi || 0), desc: r ? (r.spi >= 1 ? "进度超前" : "进度落后") : "" },
-                { label: "CPI 成本绩效", value: r ? fmtPct(r.cpi) : "—", color: kpiColor(r?.cpi || 0), desc: r ? (r.cpi >= 1 ? "成本节省" : "成本超支") : "" },
-                { label: "EAC 完工估算", value: r ? fmtMoney(r.eac) : "—", color: "text-slate-800 dark:text-slate-200", desc: r ? `BAC: ${fmtMoney(r.bac)}` : "" },
-                { label: "VAC 完工偏差", value: r ? fmtMoney(r.vac) : "—", color: r ? (r.vac >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400") : "text-slate-400", desc: r ? (r.vac >= 0 ? "预计结余" : "预计超支") : "" },
+                { label: t("evm.spi"), value: r ? fmtPct(r.spi) : "—", color: kpiColor(r?.spi || 0), desc: r ? (r.spi >= 1 ? t("evm.ahead") : t("evm.behind")) : "" },
+                { label: t("evm.cpi"), value: r ? fmtPct(r.cpi) : "—", color: kpiColor(r?.cpi || 0), desc: r ? (r.cpi >= 1 ? t("evm.underBudget") : t("evm.overBudget")) : "" },
+                { label: t("evm.eac"), value: r ? fmtMoney(r.eac) : "—", color: "text-slate-800 dark:text-slate-200", desc: r ? `BAC: ${fmtMoney(r.bac)}` : "" },
+                { label: t("evm.vac"), value: r ? fmtMoney(r.vac) : "—", color: r ? (r.vac >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400") : "text-slate-400", desc: r ? (r.vac >= 0 ? t("evm.surplus") : t("evm.overrun")) : "" },
               ].map((kpi) => (
                 <div key={kpi.label} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{kpi.label}</p>
@@ -336,11 +340,11 @@ export default function EVMPage() {
             {r && (
               <div className="grid grid-cols-3 lg:grid-cols-6 gap-4">
                 {[
-                  { label: "PV 计划值", value: fmtMoney(r.pv) },
-                  { label: "EV 挣值", value: fmtMoney(r.ev) },
-                  { label: "AC 实际成本", value: fmtMoney(r.ac) },
-                  { label: "SV 进度偏差", value: fmtMoney(r.sv) },
-                  { label: "CV 成本偏差", value: fmtMoney(r.cv) },
+                  { label: t("evm.pvLabel"), value: fmtMoney(r.pv) },
+                  { label: t("evm.evLabel"), value: fmtMoney(r.ev) },
+                  { label: t("evm.acLabel"), value: fmtMoney(r.ac) },
+                  { label: t("evm.svLabel"), value: fmtMoney(r.sv) },
+                  { label: t("evm.cvLabel"), value: fmtMoney(r.cv) },
                   { label: "TCPI", value: fmtPct(r.tcpi) },
                 ].map((item) => (
                   <div key={item.label} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm px-4 py-3">
@@ -353,7 +357,7 @@ export default function EVMPage() {
 
             {/* ---- S Curve ---- */}
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-              <h2 className="font-bold text-slate-900 dark:text-white mb-4 text-base">S 曲线 (PV / EV / AC)</h2>
+              <h2 className="font-bold text-slate-900 dark:text-white mb-4 text-base">{t("evm.sCurve")}</h2>
               <div ref={chartRef} style={{ width: "100%", height: 400 }} />
             </div>
 
@@ -361,19 +365,19 @@ export default function EVMPage() {
             {r && r.task_details && r.task_details.length > 0 && (
               <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
                 <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-                  <h2 className="font-bold text-slate-900 dark:text-white text-base">任务级别 EVM 明细</h2>
+                  <h2 className="font-bold text-slate-900 dark:text-white text-base">{t("evm.taskDetail")}</h2>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-                        <th className="py-2.5 px-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">WBS</th>
-                        <th className="py-2.5 px-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">任务</th>
+                        <th className="py-2.5 px-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{t("evm.thWBS")}</th>
+                        <th className="py-2.5 px-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{t("evm.thTask")}</th>
                         <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">PV</th>
                         <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">EV</th>
                         <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">AC</th>
-                        <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">计划%</th>
-                        <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">实际%</th>
+                        <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{t("evm.thPlanned")}</th>
+                        <th className="py-2.5 px-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{t("evm.thActual")}</th>
                       </tr>
                     </thead>
                     <tbody>

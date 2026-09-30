@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import { resources as resApi, type ResourceTimeline, type DayData } from "@/lib/api";
+import { useLang } from "@/lib/i18n";
 import PivotFilter, { type PivotFilterItem } from "@/components/PivotFilter";
 
 /* ---------- helpers ---------- */
@@ -23,8 +24,8 @@ function cellTextColor(pct: number, isWeekend: boolean): string {
   return "text-slate-500 dark:text-slate-400";
 }
 
-/* Month names */
-const MONTHS = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+/* Month name keys for i18n */
+const MONTH_KEYS = ["1","2","3","4","5","6","7","8","9","10","11","12"] as const;
 
 /* ---------- Month header ---------- */
 
@@ -35,7 +36,7 @@ interface MonthGroup {
   startIndex: number;
 }
 
-function groupByMonth(days: DayData[]): MonthGroup[] {
+function groupByMonth(days: DayData[], monthLabel: (m: number) => string): MonthGroup[] {
   const groups: MonthGroup[] = [];
   let current: MonthGroup | null = null;
 
@@ -44,7 +45,7 @@ function groupByMonth(days: DayData[]): MonthGroup[] {
     const key = `${dt.getFullYear()}-${dt.getMonth()}`;
     if (!current || `${current.year}-${current.label}` !== key) {
       current = {
-        label: `${dt.getFullYear()} ${MONTHS[dt.getMonth()]}`,
+        label: `${dt.getFullYear()} ${monthLabel(dt.getMonth())}`,
         year: dt.getFullYear(),
         days: [],
         startIndex: i,
@@ -60,6 +61,7 @@ function groupByMonth(days: DayData[]): MonthGroup[] {
 /* ---------- Tooltip ---------- */
 
 function Tooltip({ day, x, y }: { day: DayData; x: number; y: number }) {
+  const { t } = useLang();
   const over = day.utilization_pct > 100;
   return (
     <div
@@ -71,21 +73,21 @@ function Tooltip({ day, x, y }: { day: DayData; x: number; y: number }) {
       </div>
       <div className="space-y-1 text-slate-600 dark:text-slate-300">
         <div className="flex justify-between gap-4">
-          <span>可用时间</span>
+          <span>{t("timeline.availableTime")}</span>
           <span className="font-semibold text-emerald-600 dark:text-emerald-400">{day.available_hours}h</span>
         </div>
         <div className="flex justify-between gap-4">
-          <span>已分配</span>
+          <span>{t("timeline.allocated")}</span>
           <span className={`font-semibold ${over ? "text-red-500" : "text-sky-600 dark:text-sky-400"}`}>{day.allocated_hours}h</span>
         </div>
         <div className="flex justify-between gap-4 border-t border-slate-100 dark:border-slate-700 pt-1">
-          <span>剩余</span>
+          <span>{t("timeline.remaining")}</span>
           <span className={`font-bold ${day.remaining_hours > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>
             {day.remaining_hours}h
           </span>
         </div>
         <div className="flex justify-between gap-4">
-          <span>利用率</span>
+          <span>{t("timeline.utilization")}</span>
           <span className={`font-bold ${over ? "text-red-500" : "text-slate-700 dark:text-slate-200"}`}>{day.utilization_pct}%</span>
         </div>
       </div>
@@ -99,6 +101,7 @@ const CELL_W = 34; // px per day cell
 const NAME_W = 200; // px for left name column
 
 export default function ResourceTimelineView() {
+  const { t } = useLang();
   const [timelines, setTimelines] = useState<ResourceTimeline[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -124,10 +127,10 @@ export default function ResourceTimelineView() {
   const [selectedResources, setSelectedResources] = useState<Set<string>>(new Set());
 
   const TYPE_MAP: Record<string, { label: string; icon: string }> = {
-    human: { label: "人力", icon: "👤" },
-    equipment: { label: "设备", icon: "⚙️" },
-    material: { label: "材料", icon: "📦" },
-    cost: { label: "费用", icon: "💰" },
+    human: { label: t("res.type.human"), icon: "👤" },
+    equipment: { label: t("res.type.equipment"), icon: "⚙️" },
+    material: { label: t("res.type.material"), icon: "📦" },
+    cost: { label: t("res.type.cost"), icon: "💰" },
   };
 
   const categoryItems: PivotFilterItem[] = Object.entries(TYPE_MAP).map(([key, val]) => ({
@@ -153,7 +156,8 @@ export default function ResourceTimelineView() {
 
   // Use filtered data for rendering
   const days = filteredTimelines.length > 0 ? filteredTimelines[0].days : (timelines.length > 0 ? timelines[0].days : []);
-  const months = useMemo(() => groupByMonth(days), [days]);
+  const monthLabel = (m: number) => t(`month.${MONTH_KEYS[m]}`);
+  const months = useMemo(() => groupByMonth(days, monthLabel), [days, t]);
 
   // Scroll to today on load
   useEffect(() => {
@@ -198,7 +202,7 @@ export default function ResourceTimelineView() {
     return (
       <div className="text-center py-20 text-slate-400 dark:text-slate-500">
         <div className="inline-block w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mb-4" />
-        <p>加载时间线数据...</p>
+        <p>{t("timeline.loadFailed")}</p>
       </div>
     );
   }
@@ -215,7 +219,7 @@ export default function ResourceTimelineView() {
     return (
       <div className="text-center py-20 text-slate-400 dark:text-slate-500">
         <p className="text-4xl mb-4">📊</p>
-        <p className="text-base">暂无资源或分配数据</p>
+        <p className="text-base">{t("timeline.noData")}</p>
       </div>
     );
   }
@@ -225,18 +229,18 @@ export default function ResourceTimelineView() {
       {/* Filter + Legend */}
       <div className="flex items-center gap-2 flex-wrap">
         <PivotFilter
-          label="类别"
+          label={t("res.categoryFilter")}
           items={categoryItems}
           selected={selectedTypes}
           onChange={(s) => { setSelectedTypes(s); setSelectedResources(new Set()); }}
-          placeholder="搜索类别..."
+          placeholder={t("res.searchCategory")}
         />
         <PivotFilter
-          label="资源"
+          label={t("res.resourceFilter")}
           items={resourceItems}
           selected={selectedResources}
           onChange={setSelectedResources}
-          placeholder="搜索姓名、设备..."
+          placeholder={t("res.searchNameDevice")}
         />
 
         {hasFilter && (
@@ -244,7 +248,7 @@ export default function ResourceTimelineView() {
             onClick={() => { setSelectedTypes(new Set()); setSelectedResources(new Set()); }}
             className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
           >
-            ✕ 清除筛选
+            {t("timeline.clearFilter")}
           </button>
         )}
 
@@ -252,23 +256,23 @@ export default function ResourceTimelineView() {
         <div className="flex items-center gap-3 ml-auto text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded bg-emerald-50 dark:bg-emerald-950/30 border border-slate-200 dark:border-slate-700" />
-            <span>空闲</span>
+            <span>{t("timeline.legendFree")}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded bg-amber-100 dark:bg-amber-900/40 border border-slate-200 dark:border-slate-700" />
-            <span>部分</span>
+            <span>{t("timeline.legendPartial")}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded bg-orange-200 dark:bg-orange-800/50 border border-slate-200 dark:border-slate-700" />
-            <span>满载</span>
+            <span>{t("timeline.legendFull")}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded bg-red-200 dark:bg-red-800/50 border border-slate-200 dark:border-slate-700" />
-            <span>超负荷</span>
+            <span>{t("timeline.legendOver")}</span>
           </div>
           <button onClick={load}
             className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg text-xs font-medium transition-colors">
-            刷新
+            {t("common.refresh")}
           </button>
           {days.length > 0 && (
             <span>{days[0].date} ~ {days[days.length - 1].date}</span>
@@ -284,7 +288,7 @@ export default function ResourceTimelineView() {
             {/* Header area */}
             <div className="border-b-2 border-slate-200 dark:border-slate-700">
               <div className="px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase" style={{ height: 60 }}>
-                资源
+                {t("timeline.thResource")}
               </div>
             </div>
             {/* Resource rows */}
@@ -303,7 +307,7 @@ export default function ResourceTimelineView() {
             ))}
             {/* Summary row */}
             <div className="border-t-2 border-slate-200 dark:border-slate-700 flex items-center px-3 bg-slate-50 dark:bg-slate-800/80" style={{ height: 36 }}>
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">合计</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{t("timeline.total")}</span>
             </div>
           </div>
 

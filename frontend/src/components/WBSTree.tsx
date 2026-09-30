@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { WBNode, WorkitemUpdate } from "@/lib/api";
+import { useLang } from "@/lib/i18n";
 import {
   InlineEditNumber, InlineEditDate, InlineEditToggle,
 } from "./InlineEdit";
@@ -44,6 +45,7 @@ function WBSRow({
   editable: boolean;
   onSave?: (nodeId: string, data: WorkitemUpdate) => void;
 }) {
+  const { t } = useLang();
   const hasChildren = node.children.length > 0;
   const isOpen = expanded.has(node.id);
 
@@ -78,8 +80,8 @@ function WBSRow({
             ) : (
               <span className="w-5" />
             )}
-            {node.is_milestone && <span className="text-amber-500 text-base" title="里程碑">◆</span>}
-            {node.is_critical && <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" title="关键路径" />}
+            {node.is_milestone && <span className="text-amber-500 text-base" title={t("wbs.tooltipMilestone")}>◆</span>}
+            {node.is_critical && <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" title={t("wbs.tooltipCritical")} />}
             <span
               className={`font-medium ${
                 node.is_critical
@@ -167,7 +169,7 @@ function WBSRow({
                 ? "bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300"
                 : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
             }`}>
-              {node.state === "completed" ? "已完成" : node.state === "started" ? "进行中" : node.state === "unstarted" ? "未开始" : node.state}
+              {node.state === "completed" ? t("wbs.statusCompleted") : node.state === "started" ? t("wbs.statusStarted") : node.state === "unstarted" ? t("wbs.statusUnstarted") : node.state}
             </span>
           ) : "—"}
         </td>
@@ -201,6 +203,7 @@ export default function WBSTree({
   editable?: boolean;
   onSave?: (nodeId: string, data: WorkitemUpdate) => void;
 }) {
+  const { t } = useLang();
   const [expanded, setExpanded] = useState<Set<string>>(() => {
     // Expand all top-level by default
     return new Set(tree.map((n) => n.id));
@@ -247,23 +250,23 @@ export default function WBSTree({
           onClick={expandAll}
           className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
         >
-          全部展开
+          {t("wbs.expandAll")}
         </button>
         <button
           onClick={collapseAll}
           className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
         >
-          全部折叠
+          {t("wbs.collapseAll")}
         </button>
         {editable && (
           <span className="text-xs text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/30 px-2 py-1 rounded-md">
-            编辑模式：点击数值即可修改
+            {t("wbs.editMode")}
           </span>
         )}
         <div className="ml-auto text-sm text-slate-500 dark:text-slate-400">
-          共 <span className="font-semibold text-slate-700 dark:text-slate-200">{totalTasks}</span> 项
+          {t("wbs.totalItems")} <span className="font-semibold text-slate-700 dark:text-slate-200">{totalTasks}</span> {t("wbs.itemsUnit")}
           {criticalTasks > 0 && (
-            <> · 关键 <span className="font-semibold text-red-500">{criticalTasks}</span> 项</>
+            <> · {t("wbs.criticalItems")} <span className="font-semibold text-red-500">{criticalTasks}</span> {t("wbs.itemsUnit")}</>
           )}
         </div>
       </div>
@@ -273,15 +276,15 @@ export default function WBSTree({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-100 dark:bg-slate-800 border-b-2 border-slate-200 dark:border-slate-700">
-              <th className="py-2.5 px-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">WBS</th>
-              <th className="py-2.5 px-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">任务名称</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">工期</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-28">开始</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">结束</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-24">进度</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">里程碑</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-14">浮动</th>
-              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">状态</th>
+              <th className="py-2.5 px-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">{t("wbs.thWBS")}</th>
+              <th className="py-2.5 px-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t("wbs.thTaskName")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">{t("wbs.thDuration")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-28">{t("wbs.thStart")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">{t("wbs.thEnd")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-24">{t("wbs.thProgress")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">{t("wbs.thMilestone")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-14">{t("wbs.thFloat")}</th>
+              <th className="py-2.5 px-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-20">{t("wbs.thStatus")}</th>
             </tr>
           </thead>
           <tbody>

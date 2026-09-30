@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useTheme } from "./ThemeProvider";
+import { useLang } from "@/lib/i18n";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -66,7 +67,7 @@ function fmtDateFull(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+const WEEKDAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
 /* ------------------------------------------------------------------ */
 /* Component                                                           */
@@ -75,6 +76,7 @@ const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
 export default function GanttChart({ data }: { data: GanttData }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
+  const { t: tr } = useLang();
   const dark = theme === "dark";
 
   const { rangeStart, rangeDays, tasksSorted } = useMemo(() => {
@@ -126,7 +128,7 @@ export default function GanttChart({ data }: { data: GanttData }) {
 
   if (!data.tasks.length) {
     return (
-      <div className="text-center py-20 text-slate-400 dark:text-slate-500 text-lg">暂无任务数据</div>
+      <div className="text-center py-20 text-slate-400 dark:text-slate-500 text-lg">{tr("gantt.noTaskData")}</div>
     );
   }
 
@@ -169,22 +171,22 @@ export default function GanttChart({ data }: { data: GanttData }) {
         style={{ background: c.summaryBg }}
       >
         <span className="font-medium">
-          <span className="opacity-60 mr-1">开始</span>
+          <span className="opacity-60 mr-1">{tr("gantt.thStart")}</span>
           {summary.project_start ? fmtDateFull(new Date(summary.project_start as string)) : "-"}
         </span>
         <span className="font-medium">
-          <span className="opacity-60 mr-1">结束</span>
+          <span className="opacity-60 mr-1">{tr("gantt.thEnd")}</span>
           {summary.project_end ? fmtDateFull(new Date(summary.project_end as string)) : "-"}
         </span>
         <span className="font-bold text-amber-300">
-          {String(summary.total_duration_days ?? "-")} 工作日
+          {String(summary.total_duration_days ?? "-")} {tr("gantt.workDays")}
         </span>
-        <span>{String(summary.total_tasks ?? data.tasks.length)} 个任务</span>
+        <span>{String(summary.total_tasks ?? data.tasks.length)} {tr("gantt.tasks")}</span>
         <span
           className="px-2.5 py-0.5 rounded font-semibold"
           style={{ background: "rgba(239,68,68,0.2)", color: "#fca5a5" }}
         >
-          {String(summary.critical_tasks ?? 0)} 个关键任务
+          {String(summary.critical_tasks ?? 0)} {tr("gantt.criticalTasks")}
         </span>
       </div>
 
@@ -203,11 +205,11 @@ export default function GanttChart({ data }: { data: GanttData }) {
             style={{ height: HEADER_H, background: c.headerBg, borderBottom: `2px solid ${c.headerBorder}`, color: c.headerText }}
           >
             <div className="w-10 text-center">#</div>
-            <div className="flex-1 px-3">任务名称</div>
-            <div className="w-[68px] text-center">工期</div>
-            <div className="w-[76px] text-center">开始</div>
-            <div className="w-[76px] text-center">结束</div>
-            <div className="w-16 text-center">进度</div>
+            <div className="flex-1 px-3">{tr("gantt.thTaskName")}</div>
+            <div className="w-[68px] text-center">{tr("gantt.thDuration")}</div>
+            <div className="w-[76px] text-center">{tr("gantt.thStart")}</div>
+            <div className="w-[76px] text-center">{tr("gantt.thEnd")}</div>
+            <div className="w-16 text-center">{tr("gantt.thProgress")}</div>
           </div>
           {/* Rows */}
           {tasksSorted.map((t, idx) => {
@@ -284,7 +286,7 @@ export default function GanttChart({ data }: { data: GanttData }) {
                     className="text-[11px] leading-tight font-semibold"
                     style={{ color: col.isWeekend ? c.weekendText : c.dimText }}
                   >
-                    {WEEKDAYS[col.date.getDay()]}
+                    {tr(`gantt.weekday.${WEEKDAY_KEYS[col.date.getDay()]}`)}
                   </span>
                 </div>
               ))}
@@ -406,7 +408,7 @@ export default function GanttChart({ data }: { data: GanttData }) {
                       style={{ background: c.tooltipBg, color: "#fff" }}
                     >
                       {t.name} | {fmtDateFull(s)} → {fmtDateFull(e)} | {t.duration_days}d
-                      {t.total_float != null && ` | 浮动: ${t.total_float}d`}
+                      {t.total_float != null && ` | ${tr("gantt.floatLabel")}: ${t.total_float}d`}
                     </div>
                   </div>
                 );
@@ -470,7 +472,7 @@ export default function GanttChart({ data }: { data: GanttData }) {
                         className="absolute -left-2.5 text-[10px] font-bold px-1.5 py-0.5 rounded"
                         style={{ top: -2, background: "#f97316", color: "#fff" }}
                       >
-                        今天
+                        {tr("gantt.today")}
                       </div>
                     </div>
                   );
@@ -486,23 +488,23 @@ export default function GanttChart({ data }: { data: GanttData }) {
       <div className="flex items-center gap-8 mt-4 text-sm px-2" style={{ color: c.dimText }}>
         <span className="flex items-center gap-2">
           <span className="w-5 h-3 rounded shadow-sm" style={{ background: dark ? "#0ea5e9" : "#0284c7" }} />
-          <span className="font-medium">普通任务</span>
+          <span className="font-medium">{tr("gantt.normalTask")}</span>
         </span>
         <span className="flex items-center gap-2">
           <span className="w-5 h-3 rounded shadow-sm" style={{ background: "#ef4444" }} />
-          <span className="font-medium">关键路径</span>
+          <span className="font-medium">{tr("gantt.criticalPath")}</span>
         </span>
         <span className="flex items-center gap-2">
           <span className="w-4 h-4 rotate-45" style={{ background: "#f59e0b", border: "2px solid #d97706" }} />
-          <span className="font-medium">里程碑</span>
+          <span className="font-medium">{tr("gantt.milestone")}</span>
         </span>
         <span className="flex items-center gap-2">
           <span className="w-5 h-3 rounded shadow-sm" style={{ background: "#10b981" }} />
-          <span className="font-medium">已完成</span>
+          <span className="font-medium">{tr("gantt.completed")}</span>
         </span>
         <span className="flex items-center gap-2">
           <span className="w-1 h-4 rounded" style={{ background: "#f97316" }} />
-          <span className="font-medium">今天</span>
+          <span className="font-medium">{tr("gantt.today")}</span>
         </span>
       </div>
     </div>

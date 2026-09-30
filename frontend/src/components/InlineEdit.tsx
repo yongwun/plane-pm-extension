@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useLang } from "@/lib/i18n";
 
 /* ---------- InlineEditText ---------- */
 
@@ -15,6 +16,7 @@ export function InlineEditText({
   className?: string;
   placeholder?: string;
 }) {
+  const { t } = useLang();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const ref = useRef<HTMLInputElement>(null);
@@ -41,7 +43,7 @@ export function InlineEditText({
     <span
       className={`cursor-pointer hover:bg-sky-50 dark:hover:bg-sky-900/30 rounded px-1.5 py-0.5 transition-colors ${className}`}
       onClick={() => setEditing(true)}
-      title="点击编辑"
+      title={t("common.clickToEdit")}
     >
       {value || <span className="text-slate-400 dark:text-slate-500">{placeholder}</span>}
     </span>
@@ -67,6 +69,7 @@ export function InlineEditNumber({
   suffix?: string;
   className?: string;
 }) {
+  const { t } = useLang();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(String(value));
   const ref = useRef<HTMLInputElement>(null);
@@ -110,7 +113,7 @@ export function InlineEditNumber({
     <span
       className={`cursor-pointer hover:bg-sky-50 dark:hover:bg-sky-900/30 rounded px-1.5 py-0.5 transition-colors ${className}`}
       onClick={() => setEditing(true)}
-      title="点击编辑"
+      title={t("common.clickToEdit")}
     >
       {value}{suffix}
     </span>
@@ -128,6 +131,7 @@ export function InlineEditDate({
   onSave: (v: string) => void;
   className?: string;
 }) {
+  const { t } = useLang();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const ref = useRef<HTMLInputElement>(null);
@@ -160,7 +164,7 @@ export function InlineEditDate({
     <span
       className={`cursor-pointer hover:bg-sky-50 dark:hover:bg-sky-900/30 rounded px-1.5 py-0.5 font-mono transition-colors ${className}`}
       onClick={() => setEditing(true)}
-      title="点击编辑"
+      title={t("common.clickToEdit")}
     >
       {value ? value.slice(5) : <span className="text-slate-400">—</span>}
     </span>
@@ -180,6 +184,7 @@ export function InlineEditSelect({
   onSave: (v: string) => void;
   className?: string;
 }) {
+  const { t } = useLang();
   const [editing, setEditing] = useState(false);
   const ref = useRef<HTMLSelectElement>(null);
 
@@ -205,7 +210,7 @@ export function InlineEditSelect({
     <span
       className={`cursor-pointer hover:bg-sky-50 dark:hover:bg-sky-900/30 rounded px-1.5 py-0.5 transition-colors ${className}`}
       onClick={() => setEditing(true)}
-      title="点击编辑"
+      title={t("common.clickToEdit")}
     >
       {currentLabel || <span className="text-slate-400">—</span>}
     </span>
@@ -227,6 +232,7 @@ export function InlineEditToggle({
   labelOff?: string;
   className?: string;
 }) {
+  const { t } = useLang();
   return (
     <button
       className={`px-2 py-0.5 rounded text-sm font-medium transition-colors ${
@@ -235,7 +241,7 @@ export function InlineEditToggle({
           : "bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500"
       } ${className}`}
       onClick={() => onSave(!value)}
-      title="点击切换"
+      title={t("common.clickToToggle")}
     >
       {value ? labelOn : labelOff}
     </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
+import { useLang } from "@/lib/i18n";
 
 export interface PivotFilterItem {
   id: string;
@@ -29,6 +30,7 @@ export default function PivotFilter({
   maxHeight = 280,
   placeholder = "搜索...",
 }: Props) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -155,7 +157,7 @@ export default function PivotFilter({
                   : "text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/30"
               }`}
             >
-              全选
+              {t("filter.selectAll")}
             </button>
             <span className="text-slate-300 dark:text-slate-600">|</span>
             <button
@@ -167,10 +169,10 @@ export default function PivotFilter({
                   : "text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/30"
               }`}
             >
-              全不选
+              {t("filter.deselectAll")}
             </button>
             <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">
-              {selected.size}/{items.length} 已选
+              {selected.size}/{items.length} {t("filter.selectedOf")}
             </span>
           </div>
 
@@ -178,7 +180,7 @@ export default function PivotFilter({
           <div className="overflow-y-auto py-1" style={{ maxHeight }}>
             {filtered.length === 0 ? (
               <div className="px-3 py-4 text-center text-sm text-slate-400 dark:text-slate-500">
-                无匹配项
+                {t("filter.noMatch")}
               </div>
             ) : (
               filtered.map((item) => {
@@ -238,13 +240,13 @@ export default function PivotFilter({
           {selected.size > 0 && (
             <div className="border-t border-slate-200 dark:border-slate-700 px-2 py-1.5 flex items-center justify-between">
               <span className="text-xs text-slate-500 dark:text-slate-400">
-                已选 {selected.size} 项
+                {t("filter.selectedItems")} {selected.size} {t("filter.itemsUnit")}
               </span>
               <button
                 onClick={() => onChange(new Set())}
                 className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium"
               >
-                清除全部
+                {t("filter.clearAll")}
               </button>
             </div>
           )}

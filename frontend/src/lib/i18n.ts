@@ -35,6 +35,8 @@ const dict: Record<string, Record<Lang, string>> = {
   "nav.resourcesDesc": { zh: "资源池、分配、费率、负荷分析", en: "Resource pool, allocation, rates, load analysis" },
   "nav.evm":         { zh: "挣值分析 EVM",       en: "Earned Value (EVM)" },
   "nav.evmDesc":     { zh: "SPI/CPI/EAC、S曲线、趋势预测", en: "SPI/CPI/EAC, S-curve, trend forecasting" },
+  "nav.mta":         { zh: "里程碑趋势分析 MTA",   en: "Milestone Trend (MTA)" },
+  "nav.mtaDesc":     { zh: "里程碑日期漂移追踪、偏差分析", en: "Milestone date drift tracking, variance analysis" },
   "nav.subtitle":    { zh: "ProjectLibre 级别专业项目管理功能 — 运行于 Plane 之上", en: "ProjectLibre-grade professional PM features — powered by Plane" },
   "nav.apiDocs":     { zh: "API 文档",           en: "API Docs" },
 
@@ -163,6 +165,36 @@ const dict: Record<string, Record<Lang, string>> = {
   "evm.thTask":    { zh: "任务",        en: "Task" },
   "evm.thPlanned": { zh: "计划%",       en: "Planned%" },
   "evm.thActual":  { zh: "实际%",       en: "Actual%" },
+
+  // ── MTA Page ──
+  "mta.title":             { zh: "里程碑趋势分析 (MTA)",  en: "Milestone Trend Analysis (MTA)" },
+  "mta.selectProjectHint": { zh: "请先选择一个项目",        en: "Select a project to begin" },
+  "mta.chartTitle":        { zh: "里程碑趋势图",           en: "Milestone Trend Chart" },
+  "mta.slipAnalysis":      { zh: "偏差分析",              en: "Slip Analysis" },
+  "mta.current":           { zh: "当前",                  en: "Current" },
+  "mta.demoDataNotice":    { zh: "当前显示演示数据。创建基线后将显示真实里程碑趋势。", en: "Showing demo data. Create baselines to see real milestone trends." },
+  "mta.loadFailed":        { zh: "加载数据失败",            en: "Failed to load data" },
+
+  // MTA table headers
+  "mta.thMilestone":       { zh: "里程碑",                en: "Milestone" },
+  "mta.thBaselineDate":    { zh: "基线日期",              en: "Baseline Date" },
+  "mta.thCurrentDate":     { zh: "当前日期",              en: "Current Date" },
+  "mta.thSlipDays":        { zh: "偏差(天)",              en: "Slip (days)" },
+  "mta.thStatus":          { zh: "状态",                  en: "Status" },
+
+  // MTA status labels
+  "mta.statusSlipped":     { zh: "延期",                  en: "Slipped" },
+  "mta.statusImproved":    { zh: "提前",                  en: "Improved" },
+  "mta.statusStable":      { zh: "稳定",                  en: "Stable" },
+
+  // MTA legend
+  "mta.howToRead":         { zh: "图例说明",              en: "How to Read" },
+  "mta.legendSlipped":     { zh: "日期推迟 (延期)",       en: "Date Pushed Back (Slipped)" },
+  "mta.legendSlippedDesc": { zh: "里程碑日期向后期漂移，表示进度滞后", en: "Milestone date shifts later, indicating schedule delay" },
+  "mta.legendImproved":    { zh: "日期提前 (改善)",       en: "Date Pulled In (Improved)" },
+  "mta.legendImprovedDesc": { zh: "里程碑日期向前提前，表示进度改善", en: "Milestone date shifts earlier, indicating schedule improvement" },
+  "mta.legendStable":      { zh: "日期稳定",              en: "Date Stable" },
+  "mta.legendStableDesc":  { zh: "里程碑日期无变化，进度按计划执行", en: "No change in milestone date, on track" },
 
   // ── Resources Page ──
   "res.title":             { zh: "资源管理",       en: "Resource Management" },

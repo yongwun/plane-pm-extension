@@ -13,6 +13,7 @@ export default function Home() {
     { href: "/wbs", label: t("nav.wbs"), icon: "🌳", desc: t("nav.wbsDesc") },
     { href: "/resources", label: t("nav.resources"), icon: "👥", desc: t("nav.resourcesDesc") },
     { href: "/evm", label: t("nav.evm"), icon: "📈", desc: t("nav.evmDesc") },
+    { href: "/mta", label: t("nav.mta"), icon: "📉", desc: t("nav.mtaDesc") },
   ];
 
   return (

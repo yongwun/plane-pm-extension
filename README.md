@@ -21,6 +21,10 @@ Plane PM Extension is a companion application that extends [Plane](https://plane
 - **Baseline Management** — Save and compare project baselines
 - **CPM Engine** — Critical Path Method with forward/backward pass calculation
 
+<p align="center">
+  <img src="docs/screenshots/01-homepage.png" alt="Homepage" width="800">
+</p>
+
 ### Architecture
 
 ```
@@ -54,11 +58,19 @@ Plane PM Extension is a companion application that extends [Plane](https://plane
 - Progress bars and milestone markers
 - Baseline comparison overlay
 
+<p align="center">
+  <img src="docs/screenshots/02-gantt-chart.png" alt="Gantt Chart" width="800">
+</p>
+
 ### WBS (Work Breakdown Structure)
 - Hierarchical tree view with expand/collapse
 - Inline editing: duration, start date, progress, milestone
 - Add/delete/reorder tasks
 - Lock/unlock editing mode
+
+<p align="center">
+  <img src="docs/screenshots/03-wbs.png" alt="WBS" width="800">
+</p>
 
 ### Resource Management
 - **Project View**: Manage resource pools per project, assign resources to tasks
@@ -67,11 +79,30 @@ Plane PM Extension is a companion application that extends [Plane](https://plane
 - **Pivot Filter**: Excel-style multi-level filter with search, select-all, scrollable list
 - Overallocation detection and warning
 
+<p align="center">
+  <img src="docs/screenshots/04-resources-project.png" alt="Resource Management - Project View" width="800">
+  <br><em>Project View: resource pool and task allocation</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/05-resources-resource.png" alt="Resource Management - Resource View" width="800">
+  <br><em>Resource View: cross-project allocation summary</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/06-resources-timeline.png" alt="Resource Management - Timeline" width="800">
+  <br><em>Timeline View: daily utilization heatmap</em>
+</p>
+
 ### EVM (Earned Value Management)
 - Real-time PV / EV / AC calculation
 - SPI, CPI, EAC, ETC, VAC metrics
 - S-Curve chart (ECharts)
 - Performance indicator dashboard
+
+<p align="center">
+  <img src="docs/screenshots/07-evm.png" alt="EVM Dashboard" width="800">
+</p>
 
 ### Baseline
 - Save project baseline snapshots

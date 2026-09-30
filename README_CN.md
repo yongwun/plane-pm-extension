@@ -23,6 +23,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 | **基线管理** | 保存并对比项目基线（计划 vs 实际） |
 | **CPM 引擎** | 关键路径法，正推/逆推计算 |
 
+<p align="center">
+  <img src="docs/screenshots/01-homepage.png" alt="主页" width="800">
+</p>
+
 ---
 
 ## 系统架构
@@ -68,6 +72,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 - **基线对比**：叠加显示基线计划 vs 当前进度
 - **行内编辑**：直接修改任务名称、工期、进度百分比
 
+<p align="center">
+  <img src="docs/screenshots/02-gantt-chart.png" alt="甘特图" width="800">
+</p>
+
 ### 2. WBS（工作分解结构）
 
 树形结构的任务分解视图：
@@ -77,6 +85,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 - **任务操作**：新增子任务、删除任务、调整层级
 - **编辑锁定**：🔒/✏️ 切换按钮，防止误操作
 
+<p align="center">
+  <img src="docs/screenshots/03-wbs.png" alt="WBS" width="800">
+</p>
+
 ### 3. 资源管理
 
 三个视图 Tab，覆盖资源管理全场景：
@@ -85,6 +97,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 - 按项目管理资源池（人力/设备/材料/费用）
 - 资源 CRUD（增删改查）
 - 将资源分配到任务，设置分配比例
+
+<p align="center">
+  <img src="docs/screenshots/04-resources-project.png" alt="资源管理-项目视角" width="800">
+</p>
 
 #### 👤 资源视角
 - 跨项目汇总：查看每个资源被分配到了哪些项目
@@ -96,6 +112,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
   - 可滚动列表（支持 500+ 资源）
   - 利用率百分比徽章
 
+<p align="center">
+  <img src="docs/screenshots/05-resources-resource.png" alt="资源管理-资源视角" width="800">
+</p>
+
 #### 📊 时间线
 - 每日利用率热力图（甘特风格）
 - 固定左列（资源名称）+ 可滚动右侧（时间网格）
@@ -103,6 +123,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 - 鼠标悬停 Tooltip 显示详细数据
 - 今日竖线标记
 - 底部合计行
+
+<p align="center">
+  <img src="docs/screenshots/06-resources-timeline.png" alt="资源管理-时间线" width="800">
+</p>
 
 ### 4. EVM（挣值管理）
 
@@ -113,6 +137,10 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 - **预测指标**：EAC（完工估算）、ETC（剩余估算）、VAC（完工偏差）
 - **S 曲线图**：ECharts 可视化 PV/EV/AC 随时间变化
 - **状态指示器**：SPI > 1 绿色（超前）/ SPI < 1 红色（滞后）
+
+<p align="center">
+  <img src="docs/screenshots/07-evm.png" alt="EVM 挣值管理" width="800">
+</p>
 
 ### 5. 基线管理
 

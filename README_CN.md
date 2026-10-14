@@ -1,4 +1,4 @@
-# Plane PM Extension — 中文说明
+﻿# Plane PM Extension — 中文说明
 
 > **[Plane](https://github.com/makeplane/plane) 项目管理扩展插件** — 为你的 Plane 自托管实例添加专业级项目管理功能（甘特图、WBS、挣值分析、资源管理），达到 ProjectLibre / Microsoft Project 级别。
 
@@ -21,6 +21,7 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 | **资源管理** | 跨项目资源分配、利用率热力图、产能规划 |
 | **EVM（挣值管理）** | PV/EV/AC/SPI/CPI 指标，S 曲线图表 |
 | **基线管理** | 保存并对比项目基线（计划 vs 实际） |
+| **导入 / 导出** | 支持 MS Project XML 和 CSV 格式导入导出，预览后提交，字段级往返保真 |
 | **CPM 引擎** | 关键路径法，正推/逆推计算 |
 
 <p align="center">
@@ -147,6 +148,17 @@ Plane PM Extension 是 [Plane](https://plane.so)（自托管版）的扩展应�
 - **保存基线**：将当前项目计划快照保存为基线
 - **对比分析**：当前计划 vs 基线，偏差一目了然
 - **多基线支持**：可保存多个基线版本
+
+### 6. 导入 / 导出 (Import / Export)
+
+支持 **MS Project XML** 和 **CSV** 两种格式的完整导入导出：
+
+- **MS Project XML**：导入从 Microsoft Project 导出的 .xml 文件；也可导出为 MS Project 兼容的 XML
+- **CSV**：导入/导出项目数据为 CSV，方便在 Excel、LibreOffice 等表格软件中批量编辑
+- **导入策略**：Create（新建项目）或 Overwrite（更新已有任务、新增不存在的任务）
+- **预览确认**：导入前先预览解析结果（任务名称、工期、日期、依赖关系等），确认无误再提交
+- **字段级保真**：全部 15 个字段（名称、工期、计划日期、实际日期、进度、里程碑、备注、依赖等）经过 导出→修改→导入 完整往返后数据无丢失
+- **自然排序**：WBS 编号按数值排序（1, 2, …, 10, 11），而非字典序（1, 10, 11, …, 2）
 
 ---
 
@@ -354,15 +366,21 @@ plane-pm-extension/
 │   │   │   ├── gantt.py            #   甘特图数据（含 CPM 计算）
 │   │   │   ├── resources.py        #   资源管理（含跨项目汇总/时间线）
 │   │   │   ├── baseline.py         #   基线管理
+│   │   │   ├── import_export.py    #   导入/导出（XML + CSV）
 │   │   │   └── evm.py              #   挣值分析
 │   │   ├── schemas/                # Pydantic 数据模型
 │   │   ├── services/               # 业务逻辑层
 │   │   │   ├── cpm_engine.py       #   关键路径法（正推/逆推/浮动时间）
 │   │   │   ├── evm_engine.py       #   挣值计算引擎
 │   │   │   ├── wbs_builder.py      #   WBS 树形结构构建
-│   │   │   └── plane_client.py     #   Plane API 异步客户端
+│   │   │   ├── plane_client.py     #   Plane API 异步客户端
+│   │   │   └── import_export/      #   导入/导出处理器
+│   │   │       ├── msproject_xml.py  # MS Project XML 解析/构建
+│   │   │       ├── csv_handler.py    # CSV 解析/导出
+│   │   │       └── schemas.py       #   导入数据模型
 │   │   ├── config.py               #   配置管理（pydantic-settings）
 │   │   ├── database.py             #   数据库初始化
+│   │   ├── utils.py                #   共享工具（自然排序等）
 │   │   └── main.py                 #   FastAPI 应用入口
 │   ├── Dockerfile                  #   后端 Docker 镜像
 │   └── requirements.txt            #   Python 依赖

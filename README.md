@@ -19,6 +19,7 @@ Plane PM Extension is a companion application that extends [Plane](https://plane
 - **Resource Management** — Cross-project resource allocation, utilization heatmap, capacity planning
 - **EVM (Earned Value Management)** — PV/EV/AC/SPI/CPI metrics with S-Curve visualization
 - **Baseline Management** — Save and compare project baselines
+- **Import / Export** — Import from and export to **MS Project XML** and **CSV** formats, with field-level round-trip fidelity, overwrite/create import strategies, and preview before commit
 - **CPM Engine** — Critical Path Method with forward/backward pass calculation
 
 <p align="center">
@@ -108,6 +109,14 @@ Plane PM Extension is a companion application that extends [Plane](https://plane
 - Save project baseline snapshots
 - Compare current vs. baseline (planned vs. actual)
 - Variance analysis
+
+### Import / Export
+- **MS Project XML** — Import .xml files exported from Microsoft Project; export back to MS Project-compatible XML
+- **CSV** — Import/export project data as CSV for spreadsheet editing (Excel, LibreOffice, etc.)
+- **Import strategies**: Create (new project) or Overwrite (update existing tasks, add new ones)
+- **Preview before commit** — See parsed tasks, durations, dates, and dependencies before confirming import
+- **Field-level fidelity** — All 15 fields (name, duration, start/end dates, actual dates, progress, milestone, notes, dependencies, etc.) survive a full export→modify→import round-trip
+- **Natural WBS sort** — Tasks are ordered numerically (1, 2, …, 10, 11) instead of lexicographically (1, 10, 11, …, 2)
 
 ---
 
@@ -260,15 +269,21 @@ plane-pm-extension/
 │   │   │   ├── gantt.py
 │   │   │   ├── resources.py
 │   │   │   ├── baseline.py
+│   │   │   ├── import_export.py  # Import/Export (XML + CSV)
 │   │   │   └── evm.py
 │   │   ├── schemas/         # Pydantic request/response schemas
 │   │   ├── services/        # Business logic
 │   │   │   ├── cpm_engine.py     # Critical Path Method
 │   │   │   ├── evm_engine.py     # Earned Value calculations
 │   │   │   ├── wbs_builder.py    # WBS tree construction
-│   │   │   └── plane_client.py   # Plane API client
+│   │   │   ├── plane_client.py   # Plane API client
+│   │   │   └── import_export/    # Import/Export handlers
+│   │   │       ├── msproject_xml.py  # MS Project XML parser/builder
+│   │   │       ├── csv_handler.py    # CSV parser/exporter
+│   │   │       └── schemas.py       # Import data schemas
 │   │   ├── config.py
 │   │   ├── database.py
+│   │   ├── utils.py             # Shared utilities (natural sort)
 │   │   └── main.py
 │   ├── Dockerfile
 │   └── requirements.txt

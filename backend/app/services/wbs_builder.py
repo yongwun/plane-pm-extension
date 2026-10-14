@@ -9,6 +9,9 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 
+from app.utils import natural_sort_key
+
+
 @dataclass
 class WBSNode:
     """A node in the WBS tree."""
@@ -96,9 +99,9 @@ class WBSBuilder:
             else:
                 roots.append(node)
 
-        # Sort children by their original order (or name)
+        # Sort children by natural order (name contains sequence ID before WBS codes are assigned)
         def sort_key(n: WBSNode):
-            return n.name
+            return natural_sort_key(n.wbs_code or n.name)
 
         def sort_tree(node_list: list[WBSNode]):
             node_list.sort(key=sort_key)

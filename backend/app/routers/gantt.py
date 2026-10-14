@@ -32,6 +32,22 @@ class WorkItemUpdate(BaseModel):
 from app.services.cpm_engine import CPMEngine, TaskNode
 from app.services.wbs_builder import WBSBuilder
 from app.services.plane_client import get_plane_client
+from app.utils import natural_sort_key
+
+
+def _resolve_date(w, field: str) -> "date | None":
+    """Resolve effective date: actual column → extra JSON → None."""
+    val = getattr(w, field, None)
+    if val is not None:
+        return val
+    if isinstance(w.extra, dict):
+        raw = w.extra.get(field)
+        if raw:
+            try:
+                return date.fromisoformat(str(raw))
+            except (ValueError, TypeError):
+                pass
+    return None
 
 router = APIRouter()
 
@@ -55,7 +71,8 @@ async def get_gantt_data(
     result = await db.execute(
         select(WorkItemExtension).where(WorkItemExtension.project_ext_id == project_ext_id)
     )
-    workitems = result.scalars().all()
+    workitems = list(result.scalars().all())
+    workitems.sort(key=lambda w: natural_sort_key(w.wbs_code))
 
     # Fetch dependencies
     workitem_ids = [w.id for w in workitems]
@@ -79,8 +96,8 @@ async def get_gantt_data(
             name=name,
             wbs_code=w.wbs_code or "",
             outline_level=w.outline_level or 0,
-            start_date=w.actual_start,
-            end_date=w.actual_end,
+            start_date=_resolve_date(w, "actual_start"),
+            end_date=_resolve_date(w, "actual_end"),
             duration_days=w.duration_days or 0,
             is_milestone=w.is_milestone,
             is_critical=w.is_critical,
@@ -384,7 +401,8 @@ async def get_wbs(project_ext_id: UUID, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(WorkItemExtension).where(WorkItemExtension.project_ext_id == project_ext_id)
     )
-    workitems = result.scalars().all()
+    workitems = list(result.scalars().all())
+    workitems.sort(key=lambda w: natural_sort_key(w.wbs_code))
 
     items = []
     for w in workitems:
@@ -392,13 +410,15 @@ async def get_wbs(project_ext_id: UUID, db: AsyncSession = Depends(get_db)):
         if isinstance(w.extra, dict) and w.extra.get("name"):
             seq = w.extra.get("sequence_id", "")
             name = f"{seq} - {w.extra['name']}" if seq else w.extra["name"]
+        s_date = _resolve_date(w, "actual_start")
+        e_date = _resolve_date(w, "actual_end")
         items.append({
             "id": str(w.id),
             "plane_workitem_id": w.plane_workitem_id,
             "name": name,
             "parent_id": str(w.parent_workitem_ext_id) if getattr(w, "parent_workitem_ext_id", None) else None,
-            "start_date": str(w.actual_start) if w.actual_start else None,
-            "end_date": str(w.actual_end) if w.actual_end else None,
+            "start_date": str(s_date) if s_date else None,
+            "end_date": str(e_date) if e_date else None,
             "duration_days": w.duration_days or 0,
             "is_milestone": w.is_milestone,
             "percent_complete": w.percent_complete or 0,

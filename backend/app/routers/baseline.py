@@ -11,6 +11,7 @@ from app.models.project_ext import ProjectExtension
 from app.models.workitem_ext import WorkItemExtension
 from app.models.baseline import Baseline, BaselineItem
 from app.schemas.baseline import BaselineCreate, BaselineResponse, BaselineItemResponse
+from app.utils import natural_sort_key
 
 router = APIRouter()
 
@@ -137,9 +138,10 @@ async def list_baseline_items(
     result = await db.execute(
         select(BaselineItem)
         .where(BaselineItem.baseline_id == baseline_id)
-        .order_by(BaselineItem.wbs_code)
     )
-    return result.scalars().all()
+    items = list(result.scalars().all())
+    items.sort(key=lambda bi: natural_sort_key(bi.wbs_code))
+    return items
 
 
 @router.delete("/{project_ext_id}/baselines/{baseline_id}", status_code=204)
